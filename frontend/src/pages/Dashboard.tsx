@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Layout } from '../components/Layout'
 import { carbonAPI, CarbonLog, Recommendation } from '../services/api'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { Leaf, Award, CheckCircle2 } from 'lucide-react'
+import { Leaf, Award, CheckCircle2, RefreshCw } from 'lucide-react'
 
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444']
 
@@ -10,6 +10,7 @@ export const Dashboard: React.FC = () => {
   const [carbonData, setCarbonData] = useState<CarbonLog | null>(null)
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchData()
@@ -17,6 +18,7 @@ export const Dashboard: React.FC = () => {
 
   const fetchData = async () => {
     try {
+      setError(null)
       const [carbonRes, recRes] = await Promise.all([
         carbonAPI.getLatest(),
         carbonAPI.getRecommendations(),
@@ -24,6 +26,7 @@ export const Dashboard: React.FC = () => {
       setCarbonData(carbonRes.data)
       setRecommendations(recRes.data)
     } catch (error) {
+      setError('Failed to load your carbon data. Please try again.')
       console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
@@ -49,8 +52,29 @@ export const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          <p className="text-gray-500 dark:text-gray-400">Loading your carbon data...</p>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <div className="bg-red-100 dark:bg-red-900/30 p-4 rounded-xl text-center max-w-md">
+            <p className="text-red-700 dark:text-red-400 mb-2">{error}</p>
+            <button
+              onClick={fetchData}
+              className="flex items-center gap-2 mx-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              aria-label="Retry loading data"
+            >
+              <RefreshCw className="w-4 h-4" aria-hidden="true" />
+              Retry
+            </button>
+          </div>
         </div>
       </Layout>
     )
@@ -59,13 +83,22 @@ export const Dashboard: React.FC = () => {
   return (
     <Layout>
       <div className="space-y-6 mb-20 md:mb-0">
-        <header>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400">Your carbon footprint overview</p>
+        <header className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-400">Your carbon footprint overview</p>
+          </div>
+          <button
+            onClick={fetchData}
+            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Refresh data"
+          >
+            <RefreshCw className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+          </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" role="region" aria-label="Carbon summary statistics">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 transition-transform hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total CO2</p>
@@ -80,7 +113,7 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 transition-transform hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Carbon Score</p>
@@ -136,7 +169,7 @@ export const Dashboard: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Personalized Actions</h2>
             <div className="space-y-4">
               {recommendations.map((rec, index) => (
-                <article key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                <article key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl transition-transform hover:scale-[1.01]">
                   <div className="flex items-start gap-3">
                     <div className="mt-1">
                       <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
