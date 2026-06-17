@@ -15,10 +15,11 @@ pytest==7.4.4
 pytest-asyncio==0.23.3
 alembic==1.13.1
 email-validator==2.1.1
+requests==2.31.0
 
 # Google Cloud Services
-google-cloud-logging==3.11.0
-google-cloud-monitoring==2.23.3
-google-cloud-storage==2.14.0
-google-generativeai==0.8.0
+google-cloud-logging>=3.0.0
+google-cloud-monitoring>=2.0.0
+google-cloud-storage>=2.0.0
+google-generativeai>=0.7.0
 

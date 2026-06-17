@@ -59,12 +59,12 @@ export const Dashboard: React.FC = () => {
   return (
     <Layout>
       <div className="space-y-6 mb-20 md:mb-0">
-        <div>
+        <header>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400">Your carbon footprint overview</p>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" role="region" aria-label="Carbon summary statistics">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -75,7 +75,7 @@ export const Dashboard: React.FC = () => {
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <Leaf className="w-6 h-6 text-green-600 dark:text-green-400" aria-hidden="true" />
               </div>
             </div>
           </div>
@@ -90,16 +90,16 @@ export const Dashboard: React.FC = () => {
                 </p>
               </div>
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
               </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Emission Breakdown</h3>
-            <div className="h-64">
+          <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6" aria-label="Emission breakdown chart">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Emission Breakdown</h2>
+            <div className="h-64" role="img" aria-label="Pie chart showing carbon emission breakdown">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -115,14 +115,14 @@ export const Dashboard: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip aria-label="Chart details" />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
               {chartData.map((item, index) => (
                 <div key={item.name} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} aria-hidden="true" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">{item.name}</span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white ml-auto">
                     {item.value.toFixed(1)}kg
@@ -130,19 +130,19 @@ export const Dashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Personalized Actions</h3>
+          <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6" aria-label="Personalized recommendations">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Personalized Actions</h2>
             <div className="space-y-4">
               {recommendations.map((rec, index) => (
-                <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                <article key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
                   <div className="flex items-start gap-3">
                     <div className="mt-1">
-                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      <CheckCircle2 className="w-5 h-5 text-green-600" aria-hidden="true" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 dark:text-white">{rec.title}</h4>
+                      <h3 className="font-medium text-gray-900 dark:text-white">{rec.title}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{rec.description}</p>
                       <div className="flex items-center gap-4 mt-2">
                         <span className={`text-xs px-2 py-1 rounded-full ${
@@ -156,10 +156,10 @@ export const Dashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </Layout>
