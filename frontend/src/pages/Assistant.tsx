@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Layout } from '../components/Layout'
 import { carbonAPI } from '../services/api'
-import { MessageSquare, Send, Bot, User } from 'lucide-react'
+import { Send, Bot, User } from 'lucide-react'
 
 interface Message {
   role: 'user' | 'assistant'

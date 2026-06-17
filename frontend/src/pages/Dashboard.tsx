@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Layout } from '../components/Layout'
-import { carbonAPI, userAPI, CarbonLog, Recommendation } from '../services/api'
+import { carbonAPI, CarbonLog, Recommendation } from '../services/api'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { Leaf, Zap, Utensils, ShoppingBag, TrendingUp, Award, CheckCircle2 } from 'lucide-react'
+import { Leaf, Award, CheckCircle2 } from 'lucide-react'
 
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444']
 
@@ -111,7 +111,7 @@ export const Dashboard: React.FC = () => {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {chartData.map((entry, index) => (
+                    {chartData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

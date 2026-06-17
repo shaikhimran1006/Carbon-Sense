@@ -5,7 +5,7 @@ import { userAPI } from '../services/api'
 import { Leaf } from 'lucide-react'
 
 export const Onboarding: React.FC = () => {
-  const { user } = useAuth()
+  const { } = useAuth()
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     location: '',

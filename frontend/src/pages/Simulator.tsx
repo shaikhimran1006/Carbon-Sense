@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Layout } from '../components/Layout'
 import { carbonAPI, SimulationResult } from '../services/api'
-import { TrendingUp, ArrowDown } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 
 export const Simulator: React.FC = () => {
   const [simParams, setSimParams] = useState({
