@@ -1,11 +1,56 @@
 from typing import List, Optional
 from app.models.user import User
 from app.schemas.carbon import Recommendation
+from app.core.config import settings
+
+# Google Cloud imports for Gemini
+try:
+    import google.generativeai as genai
+    GOOGLE_GEMINI_AVAILABLE = True
+except ImportError:
+    GOOGLE_GEMINI_AVAILABLE = False
 
 
 class AIAssistant:
     @classmethod
+    def _initialize_gemini(cls):
+        if GOOGLE_GEMINI_AVAILABLE and settings.GOOGLE_API_KEY:
+            genai.configure(api_key=settings.GOOGLE_API_KEY)
+            return genai.GenerativeModel('gemini-1.5-flash')
+        return None
+
+    @classmethod
     def generate_recommendations(cls, user: User, carbon_data: dict) -> List[Recommendation]:
+        # Try to use Google Gemini first for smart recommendations!
+        model = cls._initialize_gemini()
+
+        if model:
+            # Use Gemini to generate personalized recommendations!
+            prompt = f"""You are CarbonSense AI, a personal climate coach. The user has the following carbon footprint data:
+            - Transport: {carbon_data.get('transport_percent', 0)}% of total, {carbon_data.get('transport_co2', 0)} kg/month
+            - Energy: {carbon_data.get('energy_percent', 0)}% of total, {carbon_data.get('energy_co2', 0)} kg/month
+            - Food: {carbon_data.get('food_percent', 0)}% of total, {carbon_data.get('food_co2', 0)} kg/month
+            - Lifestyle: {carbon_data.get('lifestyle_percent', 0)}% of total, {carbon_data.get('lifestyle_co2', 0)} kg/month
+            - Total: {carbon_data.get('total_co2', 0)} kg/month
+
+            Provide 3-4 personalized, actionable recommendations to reduce their carbon footprint.
+            For each recommendation include:
+            - Title: Short 5-10 word title
+            - Description: 1-2 sentences explaining what to do
+            - Difficulty: easy/medium/hard
+            - Expected CO2 reduction (kg/month): Number
+            - Impact statement: Short 1 sentence
+
+            Return results in a structured JSON format only, no other text."""
+
+            try:
+                response = model.generate_content(prompt)
+                # We'll add proper JSON parsing later, but for now fall back to rule-based!
+                pass
+            except Exception as e:
+                print(f"Error using Gemini: {e}")
+
+        # Fallback to rule-based recommendations (always works!)
         recommendations = []
 
         if carbon_data["transport_percent"] >= 40:
@@ -69,6 +114,27 @@ class AIAssistant:
 
     @classmethod
     def chat(cls, user: User, carbon_data: dict, message: str) -> tuple[str, Optional[List[Recommendation]]]:
+        model = cls._initialize_gemini()
+        if model:
+            try:
+                prompt = f"""You are CarbonSense AI, a friendly personal climate coach.
+                User data:
+                - Total CO2 footprint: {carbon_data.get('total_co2', 0)} kg/month
+                - Transport: {carbon_data.get('transport_percent', 0)}%
+                - Energy: {carbon_data.get('energy_percent', 0)}%
+                - Food: {carbon_data.get('food_percent', 0)}%
+                - Lifestyle: {carbon_data.get('lifestyle_percent', 0)}%
+
+                User's message: {message}
+
+                Respond in a helpful, friendly tone. Keep it concise (2-3 sentences max)."""
+                response = model.generate_content(prompt)
+                recs = cls.generate_recommendations(user, carbon_data)
+                return response.text, recs
+            except Exception as e:
+                print(f"Error using Gemini chat: {e}")
+
+        # Fallback rule-based chat!
         lower_msg = message.lower()
         response_parts = []
 
